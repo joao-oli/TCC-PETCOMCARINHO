@@ -561,7 +561,6 @@ def adicionar_agendamento():
         data = request.form.get('data')
         horario = request.form.get('horario')
 
-        # CORREÇÃO AQUI !!!
         prestador_id = request.form.get('prestador_id')
 
         produtos_ids = request.form.getlist('produtos')

@@ -197,13 +197,13 @@
         {% endwith %}
 
         <form method="POST">
-                <input type="hidden" name="cliente_id" value="{{ current_user.id }}">
+                <input type="hidden" name="cliente_id" value="{{ current_user.cliente_id }}">
                 <div class="label-box">Prestador:</div>
                 <div class="input-box-agendamento">
                     <select name="prestador_id" required>
                         <option value="">Selecione</option>
                         {% for prestador in prestadores %}
-                            <option value="{{ prestador.id }}">{{ prestador.username }}</option>
+                            <option value="{{ prestador.username }}">{{ prestador.username }}</option>
                         {% endfor %}
                     </select>
                 </div>
