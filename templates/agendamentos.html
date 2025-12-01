@@ -199,13 +199,20 @@
         Agendamento - {{ agendamento.pet.nome }} ({{ agendamento.pet.especie }})
       </div>
       <div class="card-body">
+        {% if agendamento.pet.foto %}
+        <div class="text-center mb-3">
+          <img src="{{ url_for('static', filename='uploads/' + agendamento.pet.foto) }}"
+               alt="Foto do Pet"
+               style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%;">
+        </div>
+        {% endif %}
+
         <div class="info-agendamento">
           <p><strong>Espécie:</strong> {{ agendamento.pet.especie }}</p>
           <p><strong>Serviço:</strong> {{ agendamento.servico }}</p>
           <p><strong>Data:</strong> {{ agendamento.data }}</p>
           <p><strong>Horário:</strong> {{ agendamento.horario.strftime('%H:%M') }}</p>
           <p><strong>Prestador:</strong> {{ agendamento.prestador }}</p>
-
           {% if agendamento.produtos %}
             <p><strong>Produtos:</strong></p>
             <ul>
