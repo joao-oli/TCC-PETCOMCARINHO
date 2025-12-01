@@ -6,14 +6,7 @@
     <title>Editar Agendamento</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
     <style>
-        /* Estilos globais */
-        * {
-            font-family: "Poppins", sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { font-family: "Poppins", sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: url('/static/images/agendamentos_background.jpg') no-repeat center center fixed;
             background-size: cover;
@@ -22,7 +15,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .container-agendamento {
             background: rgba(0, 0, 0, 0.6);
             color: white;
@@ -32,87 +24,33 @@
             border-radius: 15px;
             box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5);
         }
-
-        .agendamento-title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 600;
+        .agendamento-title { text-align: center; margin-bottom: 20px; font-size: 24px; font-weight: 600; }
+        .label-box { margin-bottom: 10px; font-size: 14px; color: white; }
+        .input-box-agendamento { position: relative; margin-bottom: 20px; }
+        .input-box-agendamento select, .input-box-agendamento input {
+            width: 100%; padding: 12px 15px; border: none; border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1); color: white; outline: none; font-size: 14px;
         }
-
-        .label-box {
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: white;
-        }
-
-        .input-box-agendamento {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .input-box-agendamento select, 
-        .input-box-agendamento input {
-            width: 100%;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .input-box-agendamento select::placeholder,
-        .input-box-agendamento input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
         .agendamento-button {
-            width: 100%;
-            padding: 12px;
-            background-color: #DEAD6F; /* Cor de fundo */
-            color: white;
-            border: 2px solid #DEAD6F; /* Cor da borda */
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
+            width: 100%; padding: 12px; background-color: #DEAD6F; color: white;
+            border: 2px solid #DEAD6F; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
             transition: 0.3s;
         }
-
         .agendamento-button:hover {
             box-shadow:
                 rgba(222, 173, 111, 0.4) 5px 5px,
                 rgba(222, 173, 111, 0.3) 10px 10px,
                 rgba(222, 173, 111, 0.2) 15px 15px;
         }
-
-        .flashes {
-            list-style: none;
-            margin-top: 15px;
-            padding: 0;
-        }
-
-        .flashes li {
-            background-color: #28a745; /* Verde */
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        select {
-            background-color: black;
-            color: white; /* Mantém o texto visível */
-        }
+        .flashes { list-style: none; margin-top: 15px; padding: 0; }
+        .flashes li { background-color: #28a745; color: white; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        select { background-color: black; color: white; }
     </style>
 </head>
 <body>
     <div class="container-agendamento">
         <h1 class="agendamento-title">Editar Agendamento</h1>
 
-        <!-- Exibe mensagens de erro ou sucesso -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul class="flashes">
@@ -146,9 +84,7 @@
 
             <div class="input-box-agendamento">
                 <label for="especie" class="label-box">Espécie:</label>
-                <select id="especie" name="especie" required>
-                    <option value="{{ agendamento.especie }}" selected>{{ agendamento.especie }}</option>
-                </select>
+                <input type="text" id="especie" name="especie" value="{{ agendamento.pet.especie }}" disabled>
             </div>
 
             <div class="input-box-agendamento">
@@ -170,15 +106,22 @@
             </div>
 
             <div class="input-box-agendamento">
-                <label for="prestador" class="label-box">Prestador:</label>
-                <input type="text" id="prestador" name="prestador" value="{{ agendamento.prestador }}" required>
+                <label for="prestador_id" class="label-box">Prestador:</label>
+                <select id="prestador_id" name="prestador_id" required>
+                    <option value="">Selecione</option>
+                    {% for p in prestadores %}
+                        <option value="{{ p.id }}" {% if p.id == agendamento.prestador_id %}selected{% endif %}>{{ p.username }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="input-box-agendamento">
                 <label for="produtos" class="label-box">Produtos:</label>
                 <select id="produtos" name="produtos" multiple required>
                     {% for produto in produtos %}
-                        <option value="{{ produto.id }}" {% if produto.id in produtos_agendados %}selected{% endif %}>{{ produto.nome }} - R$ {{ produto.preco }}</option>
+                        <option value="{{ produto.id }}" {% if produto.id in produtos_agendados %}selected{% endif %}>
+                            {{ produto.nome }} - R$ {{ produto.preco }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>
@@ -208,7 +151,7 @@
             fetch(`/pet/${pet_id}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('especie').innerHTML = `<option value="${data.especie}">${data.especie}</option>`;
+                    document.getElementById('especie').value = data.especie;
                 });
         }
     </script>

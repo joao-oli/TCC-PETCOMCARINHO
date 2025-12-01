@@ -197,54 +197,100 @@
         {% endwith %}
 
         <form method="POST">
+                <input type="hidden" name="cliente_id" value="{{ current_user.id }}">
+                <div class="label-box">Prestador:</div>
+                <div class="input-box-agendamento">
+                    <select name="prestador_id" required>
+                        <option value="">Selecione</option>
+                        {% for prestador in prestadores %}
+                            <option value="{{ prestador.id }}">{{ prestador.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <div class="label-box">Selecione o Prestador:</div>
-            <div class="input-box-agendamento">
-                <select name="cliente_id" required>
-                    <option value="">Escolha o prestador</option>
-                    {% for c in clientes %}
-                        <option value="{{ c.id }}">{{ c.nome }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                
+                <div class="label-box">Pet:</div>
+                <div class="input-box-agendamento">
+                    <select name="pet_id" id="pet_id" required onchange="atualizarEspecie()">
+                        <option value="">Selecione</option>
+                        {% for p in pets %}
+                            <option value="{{ p.id }}">{{ p.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <div class="label-box">Selecione o Pet:</div>
-            <div class="input-box-agendamento">
-                <select name="pet_id" required>
-                    <option value="">Escolha o pet</option>
-                    {% for p in pets %}
-                        <option value="{{ p.id }}">{{ p.nome }}</option>
-                    {% endfor %}
-                </select>
-            </div>
 
-            <div class="label-box">Selecione o Produto:</div>
-            <div class="input-box-agendamento">
-                <select name="produto_id" required>
-                    <option value="">Escolha o produto</option>
-                    {% for pr in produtos %}
-                        <option value="{{ pr.id }}">{{ pr.nome }} - R$ {{ pr.preco }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                <div class="label-box">Espécie:</div>
+                <div class="input-box-agendamento">
+                    <input type="text" id="especie" disabled>
+                </div>
 
-            <div class="label-box">Data:</div>
-            <div class="input-box-agendamento">
-                <input type="date" name="data" required>
-            </div>
 
-            <div class="label-box">Horário:</div>
-            <div class="input-box-agendamento">
-                <input type="time" name="horario" required>
-            </div>
+                <div class="label-box">Serviço:</div>
+                <div class="input-box-agendamento">
+                    <select id="servico" name="servico" required>
+                        <option value="">Selecione</option>
+                        <option value="Banho">Banho</option>
+                        <option value="Tosa">Tosa</option>
+                    </select>
+                </div>
 
-            <button class="agendamento-button" type="submit">Agendar</button>
+                <div class="label-box">Produtos:</div>
+                <div class="input-box-agendamento">
+                    <select name="produtos" id="produtos" multiple onchange="mostrarQuantidades()">
+                        {% for pr in produtos %}
+                            <option value="{{ pr.id }}">{{ pr.nome }} - R$ {{ pr.preco }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        </form>
+                <div id="quantidades-container"></div>
 
-    </div>
+                <script>
+                function mostrarQuantidades() {
+                    const select = document.getElementById("produtos");
+                    const escolhidos = Array.from(select.selectedOptions).map(o => o.value);
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                    const container = document.getElementById("quantidades-container");
+
+                    container.innerHTML = "";
+
+                    escolhidos.forEach(id => {
+                        container.innerHTML += `
+                            <div class="quantidade-item">
+                                Quantidade para produto ${id}:
+                                <input type="number" min="1" value="1" name="quantidade_${id}">
+                            </div>
+                        `;
+                    });
+                }
+                </script>
+
+
+                <div class="label-box">Data:</div>
+                <div class="input-box-agendamento">
+                    <input type="date" name="data" required>
+                </div>
+
+                <div class="label-box">Horário:</div>
+                <div class="input-box-agendamento">
+                    <input type="time" name="horario" required>
+                </div>
+
+                <button class="agendamento-button" type="submit">Agendar</button>
+
+            </form>
+
+            <script>
+                function atualizarEspecie() {
+                    const pet_id = document.getElementById('pet_id').value;
+                    fetch(`/pet/${pet_id}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            document.getElementById('especie').value = data.especie;
+                        });
+                }
+            </script>
 
 </body>
 </html>

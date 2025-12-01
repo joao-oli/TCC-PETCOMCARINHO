@@ -126,6 +126,16 @@
         color: var(--accent-color);
       }
     }
+
+    .pet-foto {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      border: 1px solid var(--grey-color);
+      background-color: white;
+}
   </style>
 
 </head>
@@ -195,13 +205,22 @@
       <div class="card-header">
         Agendamento - {{ agendamento.pet.nome }} ({{ agendamento.pet.especie }})
       </div>
+      {% if agendamento.pet.foto %}
+        <img class = "pet.foto"
+              src = "{{url_for('static', filename='uploads/' + agendamento.pet.foto)}}"
+              alt = "Foto de Pet {{agendamento.pet.nome}}">
+      {% else %}
+        <img class = "pet-foto"
+              src = "{{url_for('static', filename='images/default-pet.jpg')}}"
+              alt = "Pet sem foto">
+      {% endif %}
       <div class="card-body">
         <div class="info-agendamento">
           <p><strong>Espécie:</strong> {{ agendamento.pet.especie }}</p>
           <p><strong>Serviço:</strong> {{ agendamento.servico }}</p>
           <p><strong>Data:</strong> {{ agendamento.data }}</p>
           <p><strong>Horário:</strong> {{ agendamento.horario.strftime('%H:%M') }}</p>
-          <p><strong>Prestador:</strong> {{ agendamento.prestador }}</p>
+          <p><strong>Prestador:</strong> {{ agendamento.prestador_nome }}</p>
 
           {% if agendamento.produtos %}
             <p><strong>Produtos:</strong></p>

@@ -556,15 +556,19 @@ def adicionar_agendamento():
     if request.method == 'POST':
         cliente_id = request.form.get('cliente_id')
         pet_id = request.form.get('pet_id')
-        especie = request.form.get('especie')
+        especie = request.form.get('especie')  # <- este campo está disabled no HTML, não envia nada!
         servico = request.form.get('servico')
         data = request.form.get('data')
         horario = request.form.get('horario')
-        prestador = request.form.get('prestador')
-        produtos_ids = request.form.getlist('produtos')
-        quantidades = [int(request.form[f'quantidade_{produto_id}']) for produto_id in produtos_ids]
 
-        if not cliente_id or not pet_id or not especie or not servico or not data or not horario or not prestador:
+        # CORREÇÃO AQUI !!!
+        prestador_id = request.form.get('prestador_id')
+
+        produtos_ids = request.form.getlist('produtos')
+        quantidades = [int(request.form[f'quantidade_{pid}']) for pid in produtos_ids]
+
+        # AJUSTE 1: remover especie do obrigatório porque input disabled NÃO envia valor
+        if not cliente_id or not pet_id or not servico or not data or not horario or not prestador_id:
             return "Todos os campos são obrigatórios.", 400
 
         cliente = Cliente.query.get(cliente_id)
@@ -579,14 +583,19 @@ def adicionar_agendamento():
         except ValueError:
             return "Formato de data ou horário inválido.", 400
 
+        # AJUSTE 2: especie deve vir da tabela Pet
+        especie_final = pet.especie
+
         agendamento = Agendamento(
             cliente_id=cliente_id,
             pet_id=pet_id,
-            especie=especie,
+            especie=especie_final,
             servico=servico,
             data=data_formatada,
             horario=horario_formatado,
-            prestador=prestador
+
+            # AJUSTE 3: agora salvar o ID do prestador corretamente
+            prestador=prestador_id
         )
 
         db.session.add(agendamento)
@@ -598,6 +607,7 @@ def adicionar_agendamento():
             
             if produto.quantidade < quantidade_usada:
                 return f"Não há estoque suficiente para o produto {produto.nome}.", 400
+
             produto.quantidade -= quantidade_usada
             db.session.commit()
 
@@ -611,9 +621,9 @@ def adicionar_agendamento():
         db.session.commit()
 
         if current_user.role == 'prestador':
-            return redirect(url_for('agendamentos'))  # Redireciona para a página de agendamentos do prestador
+            return redirect(url_for('agendamentos'))
         else:
-            return redirect(url_for('meus_agendamentos'))  # Redireciona para a página de agendamentos do cliente
+            return redirect(url_for('meus_agendamentos'))
 
     clientes = Cliente.query.all()
     produtos = Produto.query.all()
@@ -624,7 +634,15 @@ def adicionar_agendamento():
     else:
         pets = Pet.query.all()
 
-    return render_template('adicionar_agendamento.html', clientes=clientes, produtos=produtos, pets=pets)
+    prestadores = User.query.filter_by(role='prestador').all()
+    return render_template(
+        'adicionar_agendamento.html',
+        clientes=clientes,
+        produtos=produtos,
+        pets=pets,
+        prestadores=prestadores
+    )
+
 
 @app.route('/agendamentos')
 @login_required
