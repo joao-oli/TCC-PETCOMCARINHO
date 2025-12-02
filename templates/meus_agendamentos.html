@@ -26,6 +26,12 @@
     body {
       font-family: var(--body-font);
       background-color: var(--light-grey-color);
+      background-image: url('{{ url_for("static", filename="images/banho_cachorro.jpg") }}');
+      background-size: contain;       
+      background-position: center;  
+      background-repeat: no-repeat;
+      background-attachment: scroll;
+      background-position-y: 0px;
       padding-bottom: 60px;
     }
 
@@ -44,7 +50,7 @@
       border: 1px solid var(--grey-color);
       padding: 20px;
       margin-bottom: 30px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
       text-align: left;
       display: flex;
       flex-direction: column;
@@ -104,6 +110,7 @@
       border: none;
       padding: 15px 30px;
       font-size: 1.2rem;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
     }
 
     .btn-sm {
@@ -112,7 +119,9 @@
       padding: 10px 20px;
     }
 
-    
+    #profileContent h1 {
+      text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.7);
+    }
 
     .text-flash-blue {
       animation: flash-text-blue 1s infinite;
@@ -135,8 +144,16 @@
       margin-bottom: 15px;
       border: 1px solid var(--grey-color);
       background-color: white;
-}
-  </style>
+    }
+</style>
+
+
+  <script>
+  window.addEventListener('scroll', function() {
+      const scrolled = window.scrollY;
+      document.body.style.backgroundPositionY = -(scrolled * 0.1) + "px";
+  });
+  </script>
 
 </head>
 <body>

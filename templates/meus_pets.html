@@ -8,116 +8,144 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chilanka&family=Montserrat:wght@300&display=swap"/>
 
-    <style>
-        :root {
-            --accent-color: #DEAD6F;
-            --dark-color: #222222;
-            --light-dark-color: #727272;
-            --light-color: #fff;
-            --grey-color: #dbdbdb;
-            --light-grey-color: #fafafa;
-            --primary-color: #6995B1;
-            --light-primary-color: #eef1f3;
-            --body-font: 'Chilanka', cursive;
-            --heading-font: 'Chilanka', cursive;
-            --secondary-font: 'Montserrat', sans-serif;
-        }
+   <style>
+    :root {
+        --accent-color: #DEAD6F;
+        --dark-color: #222222;
+        --light-dark-color: #727272;
+        --light-color: #fff;
+        --grey-color: #dbdbdb;
+        --light-grey-color: #fafafa;
+        --primary-color: #6995B1;
+        --light-primary-color: #eef1f3;
+        --body-font: 'Chilanka', cursive;
+        --heading-font: 'Chilanka', cursive;
+        --secondary-font: 'Montserrat', sans-serif;
+    }
 
-        body {
-            font-family: var(--body-font);
-            background-color: var(--light-grey-color);
-            padding-bottom: 60px;
-        }
+    body {
+        font-family: var(--body-font);
+        background-color: var(--light-grey-color);
+        padding-bottom: 60px;
+        background-image: url('{{ url_for("static", filename="images/SL-011023-55240-04.jpg") }}');
+        background-size: cover;       
+        background-position: center;  
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-position-y: 0px;
+        padding-bottom: 60px;
+    }
 
-        .bg-custom {
-            background-color: var(--light-color);
-        }
+    .bg-custom {
+        background-color: var(--light-color);
+    }
 
-        .navbar {
-            height: 120px;
-        }
+    .navbar {
+        height: 120px;
+    }
 
-        .content-container {
-            padding: 1% 4%;
-        }
+    .content-container {
+        padding: 1% 4%;
+    }
 
-        .card {
-            border-radius: 20px;
-            background-color: var(--light-primary-color);
-            transition: transform 0.2s;
-        }
+    .page-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--dark-color);
+        text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
 
-        .card:hover {
-            transform: scale(1.05);
-        }
+    .card {
+        border-radius: 20px;
+        background-color: var(--light-primary-color);
+        transition: transform 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-        .card-title {
-            font-size: 1.5rem;
-            color: var(--dark-color);
-        }
+    .card:hover {
+        transform: scale(1.05);
+    }
 
-        .card-text {
-            font-size: 1.2rem;
-            color: var(--light-dark-color);
-        }
+    .card-title {
+        font-size: 1.5rem;
+        color: var(--dark-color);
+        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+    }
 
-        footer {
-            margin: 0;
-        }
+    .card-text {
+        font-size: 1.2rem;
+        color: var(--light-dark-color);
+    }
 
-        .btn-primary {
-            background-color: var(--accent-color);
+    footer {
+        margin: 0;
+    }
+
+    .btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    text-shadow: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+}
+
+    .text-flash-blue {
+        animation: flash-text-blue 1s infinite;
+    }
+
+    @keyframes flash-text-blue {
+        0%, 100% {
             color: white;
-            font-weight: bold;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
         }
+        50% {
+            color: var(--accent-color);
+        }
+    }
 
-        .text-flash-blue {
-            animation: flash-text-blue 1s infinite;
-        }
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        @keyframes flash-text-blue {
-            0%, 100% {
-                color: white;
-            }
-            50% {
-                color: var(--accent-color);
-            }
-        }
+    .text-container {
+        flex: 1;
+    }
 
-        .card-body {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .image-container {
+        margin-left: 20px;
+    }
 
-        .text-container {
-            flex: 1;
-        }
+    .image-container img {
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
 
-        .image-container {
-            margin-left: 20px;
-        }
+    .btn-sm {
+        height: 50px;
+        font-size: 0.8rem;
+        padding: 14px 24px;
+    }
 
-        .image-container img {
-            max-width: 150px;
-            max-height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+    .hidden {
+        display: none !important;
+    }
+</style>
 
-        .btn-sm {
-            height: 50px;
-            font-size: 0.8rem;
-            padding: 14px 24px;
-        }
 
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    <script>
+  window.addEventListener('scroll', function() {
+      const scrolled = window.scrollY;
+      document.body.style.backgroundPositionY = -(scrolled * 0.1) + "px";
+  });
+  </script>
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-custom mb-4">
@@ -174,7 +202,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h1>Meus Pets</h1>
+        <h1 class="page-title">Meus Pets</h1>
         <div class="btn-container">
             <a href="{{ url_for('adicionar_pet', cliente_id=cliente.id) }}" class="btn btn-primary my-3 text-flash-blue">
                 Adicionar Pet
