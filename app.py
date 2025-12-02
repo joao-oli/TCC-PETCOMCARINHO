@@ -562,6 +562,7 @@ def adicionar_agendamento():
         horario = request.form.get('horario')
 
         prestador_id = request.form.get('prestador_id')
+        prestador = User.query.get(prestador_id)
 
         produtos_ids = request.form.getlist('produtos')
         quantidades = [int(request.form[f'quantidade_{pid}']) for pid in produtos_ids]
@@ -680,7 +681,7 @@ def editar_agendamento(id):
             agendamento.horario = datetime.strptime(horario_str, '%H:%M').time()
 
             agendamento.servico = request.form.get('servico', agendamento.servico)
-            agendamento.prestador = request.form.get('prestador', agendamento.prestador)
+            agendamento.prestador_id = request.form.get('prestador_id', agendamento.prestador_id)
             agendamento.cliente_id = request.form.get('cliente_id', agendamento.cliente_id)
             agendamento.pet_id = request.form.get('pet_id', agendamento.pet_id)
 
@@ -721,7 +722,9 @@ def editar_agendamento(id):
         except ValueError as e:
             flash(f"Erro na data ou horário: {e}", "error")
 
-    return render_template('editar_agendamento.html', agendamento=agendamento, clientes=clientes, pets=pets, produtos=produtos)
+    prestadores = User.query.filter_by(role='prestador').all()
+
+    return render_template('editar_agendamento.html', agendamento=agendamento, clientes=clientes, pets=pets, produtos=produtos, prestadores=prestadores)
 
 @app.route('/remover_agendamento/<int:id>', methods=['GET', 'POST'])
 def remover_agendamento(id):
@@ -1129,7 +1132,10 @@ class Agendamento(db.Model):
     servico = db.Column(db.String(50))
     data = db.Column(db.Date)
     horario = db.Column(db.Time)
-    prestador = db.Column(db.String(100))
+    
+    # Ajuste do prestador
+    prestador_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    prestador = db.relationship('User', backref='agendamentos')
 
     cliente = db.relationship('Cliente', backref='agendamentos')
     pet = db.relationship('Pet', backref='agendamentos')
@@ -1143,7 +1149,12 @@ class Agendamento(db.Model):
         self.servico = servico
         self.data = data
         self.horario = horario
-        self.prestador = prestador
+
+        # Pode passar objeto User ou ID
+        if isinstance(prestador, User):
+            self.prestador = prestador
+        else:
+            self.prestador_id = prestador
 
 class AgendamentoProduto(db.Model):
     id = db.Column(db.Integer, primary_key=True)

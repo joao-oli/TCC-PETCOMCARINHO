@@ -203,7 +203,7 @@
                     <select name="prestador_id" required>
                         <option value="">Selecione</option>
                         {% for prestador in prestadores %}
-                            <option value="{{ prestador.username }}">{{ prestador.username }}</option>
+                            <option value="{{ prestador.id }}">{{ prestador.username }}</option>
                         {% endfor %}
                     </select>
                 </div>

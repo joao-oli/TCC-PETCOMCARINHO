@@ -220,7 +220,8 @@
           <p><strong>Serviço:</strong> {{ agendamento.servico }}</p>
           <p><strong>Data:</strong> {{ agendamento.data }}</p>
           <p><strong>Horário:</strong> {{ agendamento.horario.strftime('%H:%M') }}</p>
-          <p><strong>Prestador:</strong> {{ agendamento.prestador }}</p>
+          <p><strong>Prestador:</strong> {{ agendamento.prestador.username if agendamento.prestador else 'Não definido' }}</p>
+
 
           {% if agendamento.produtos %}
             <p><strong>Produtos:</strong></p>

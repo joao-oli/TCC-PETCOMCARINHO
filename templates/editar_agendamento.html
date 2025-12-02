@@ -109,11 +109,14 @@
                 <label for="prestador_id" class="label-box">Prestador:</label>
                 <select id="prestador_id" name="prestador_id" required>
                     <option value="">Selecione</option>
-                    {% for p in prestadores %}
-                        <option value="{{ p.id }}" {% if p.id == agendamento.prestador_id %}selected{% endif %}>{{ p.username }}</option>
+                    {% for prestador in prestadores %}
+                        <option value="{{ prestador.id }}" {% if prestador.id == agendamento.prestador_id %}selected{% endif %}>
+                            {{ prestador.username }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>
+
 
             <div class="input-box-agendamento">
                 <label for="produtos" class="label-box">Produtos:</label>
