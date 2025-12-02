@@ -18,11 +18,17 @@
         }
 
         body {
-            background: url('/static/images/agendamentos_background.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             overflow-y: auto;
             padding-top: 150px;
+            background-image: url('{{ url_for("static", filename="images/add_agenda.jpg") }}');
+            background-size: cover;       
+            background-position: center;  
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+            background-position-y: 0px;
+            padding-bottom: 60px;
         }
 
         .container-agendamento {
