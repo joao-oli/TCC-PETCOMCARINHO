@@ -20,9 +20,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Optional, ValidationError
+import mercadopago
+
+
+app = Flask(__name__)
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
+
+sdk = mercadopago.SDK("APP_USR-7381456955120845-120122-3c5e2f08a8203282a03cfcdfebdb9c9a-3032944465")
 
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///petshop.db'
@@ -145,6 +151,55 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Este nome de usuário já está em uso. Escolha outro.')
+
+@app.route('/confirmar_compra', methods=['POST'])
+@login_required
+@role_required('cliente')
+def confirmar_compra():
+    cliente_id = current_user.cliente.id
+
+    carrinho = Carrinho.query.filter_by(cliente_id=cliente_id, status='ativo').first()
+    if not carrinho or not carrinho.itens:
+        flash("Carrinho vazio, adicione produtos ou serviços antes de finalizar.", "danger")
+        return redirect(url_for('loja'))
+
+    items = []
+    for item in carrinho.itens:
+        items.append({
+            "title": item.produto.nome,
+            "quantity": item.quantidade,
+            "unit_price": float(item.produto.preco)
+        })
+
+    agendamentos = Agendamento.query.filter_by(cliente_id=cliente_id).all()
+    for agendamento in agendamentos:
+        items.append({
+            "title": f"Serviço: {agendamento.servico} - Pet: {agendamento.pet.nome}",
+            "quantity": 1,
+            "unit_price": 50.0
+        })
+
+    preference_data = {
+        "items": items,
+        "back_urls": {
+            "success": url_for('home_cliente', _external=True),
+            "failure": url_for('meu_carrinho', _external=True),
+            "pending": url_for('meu_carrinho', _external=True)
+        },
+        "auto_return": "approved",
+        "payer": {
+            "email": current_user.email
+        }
+    }
+
+    preference_response = sdk.preference().create(preference_data)
+    preference_id = preference_response["response"]["id"]
+
+    carrinho.status = 'finalizada'
+    db.session.commit()
+
+    checkout_url = preference_response["response"]["init_point"]
+    return redirect(checkout_url)
 
 @app.route('/graficos_financeiros')
 @login_required
@@ -1051,11 +1106,6 @@ def finalizada_compra():
         db.session.commit()
 
     return render_template('finalizada_compra.html', itens=itens, total=total)
-
-@app.route('/confirmar_compra', methods=['POST'])
-@login_required
-def confirmar_compra():
-    return redirect(url_for('home'))
 
 @app.route("/esqueci_senha", methods=['GET', 'POST'])
 def esqueci_senha():
