@@ -424,6 +424,34 @@ a.btn-wishlist {
   border: 1px solid rgba(65, 64, 62, 0.20);
 }
 
+/* Card do perfil */
+.profile-card {
+    background-color: var(--light-color);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 30px;
+    margin-top: 20px;
+}
+
+.profile-card .form-control {
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+
+.profile-card .btn-primary {
+    background-color: var(--accent-color);
+    border-radius: 10px;
+    font-size: 1.1rem;
+    padding: 12px 25px;
+    transition: 0.3s;
+}
+
+.profile-card .btn-primary:hover {
+    background-color: #cfa15a;
+}
+
+
 
 /* pet foodies style  */
 button.filter-button {

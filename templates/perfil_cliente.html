@@ -127,14 +127,49 @@
         </div>
     </div>
 </nav>
-<div id="profileContent" class="container mt-5">
-    <h1>Perfil do Cliente</h1>
-    <p>Bem-vindo, {{ current_user.username }}!</p>
-    <!-- Adicione mais conteúdo se quiser -->
+<div class="container mt-5">
+    <div class="card shadow-lg p-4" style="border-radius: 20px;">
+
+        <div class="row">
+            <!-- FOTO -->
+            <div class="col-md-4 text-center">
+                {% if cliente.foto %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ cliente.foto) }}"
+                         class="img-fluid rounded-circle shadow"
+                         style="width: 220px; height: 220px; object-fit: cover;">
+                {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png"
+                         class="img-fluid rounded-circle shadow"
+                         style="width: 220px; height: 220px;">
+                {% endif %}
+                <a href="{{ url_for('editar_perfil') }}" class="btn btn-primary mt-3 px-4">
+                    Editar Perfil
+                </a>
+            </div>
+
+            <!-- INFORMAÇÕES -->
+            <div class="col-md-8">
+                <h2 class="mb-3">{{ cliente.nome }}</h2>
+
+                <p><strong>Email:</strong> {{ cliente.email }}</p>
+                <p><strong>Telefone:</strong> {{ cliente.telefone if cliente.telefone else 'Não informado' }}</p>
+
+                <hr>
+
+                <h5 class="mt-3">Sobre</h5>
+                <p style="white-space: pre-line;">
+                    {{ cliente.descricao if cliente.descricao else 'Nenhuma descrição adicionada.' }}
+                </p>
+
+            </div>
+        </div>
+
+    </div>
 </div>
 
+
 <footer class="bg-dark text-white text-center py-3 mt-5 fixed-bottom">
-  <p>© 2025 PetLove - Todos os direitos reservados</p>
+  <p>© 2025 Pet Com Carinho - Todos os direitos reservados</p>
 </footer>
 
 

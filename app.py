@@ -943,14 +943,26 @@ def remover_transacao(id):
 @login_required
 @role_required('cliente')
 def editar_perfil():
+    cliente = current_user.cliente  # pega o cliente vinculado ao user
+
     if request.method == 'POST':
-        current_user.nome = request.form['nome']
-        current_user.email = request.form['email']
+        cliente.nome = request.form['nome']
+        cliente.email = request.form['email']
+        cliente.telefone = request.form['telefone']
+        cliente.descricao = request.form['descricao']
+
+        # Upload da foto
+        foto = request.files.get('foto')
+        if foto and foto.filename != "":
+            filename = secure_filename(foto.filename)
+            foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            cliente.foto = filename
+
         db.session.commit()
-        flash('Perfil atualizado com sucesso!')
-        return redirect(url_for('editar_perfil'))
-    
-    return render_template('editar_perfil.html')
+        flash('Perfil atualizado com sucesso!', 'success')
+        return redirect(url_for('perfil_cliente'))
+
+    return render_template('editar_perfil.html', cliente=cliente)
 
 @app.route('/editar_usuario/<int:id>', methods=['GET', 'POST'])
 def editar_usuario(id):
@@ -1070,7 +1082,8 @@ def home():
 @app.route('/perfil_cliente')
 @login_required
 def perfil_cliente():
-    return render_template('perfil_cliente.html')
+    cliente = current_user.cliente
+    return render_template('perfil_cliente.html', cliente=cliente)
 
 
 @app.route('/finalizada_compra')
@@ -1152,6 +1165,10 @@ class Cliente(db.Model):
     pets = db.relationship('Pet', back_populates='cliente', lazy=True)
 
     usuario = db.relationship('User', back_populates='cliente', uselist=False)
+
+    descricao = db.Column(db.Text, nullable=True)
+    foto = db.Column(db.String(120), nullable=True)
+
 
     def __repr__(self):
         return f'<Cliente {self.nome}>'

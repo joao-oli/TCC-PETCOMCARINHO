@@ -2,7 +2,7 @@ PET COM CARINHO - Sistema de Gerenciamento de Pet Shop - MVP
 
 Descrição:
 
-O PETLOVE é um sistema de gerenciamento para um pet shop. Ele permite o cadastro e a gestão de clientes, pets, agendamentos de serviços, estoque de produtos e transações de vendas, proporcionando um controle eficiente para a administração do negócio.
+O Pet Com Carinho é um sistema de gerenciamento para um pet shop. Ele permite o cadastro e a gestão de clientes, pets, agendamentos de serviços, estoque de produtos e transações de vendas, proporcionando um controle eficiente para a administração do negócio.
 
 Funcionalidades:
 
