@@ -392,27 +392,33 @@ import json
 @app.route('/home_prestador')
 @login_required
 def home_prestador():
-    # Busca todas as transações no banco (exemplo)
-    # Ajuste conforme seu modelo e necessidade
+
+    user = User.query.get(current_user.id)
+
     transacoes = []
     try:
-        # Supondo que você importe o modelo Transacao do seu app.py
         transacoes_db = Transacao.query.order_by(Transacao.data.asc()).all()
 
         for t in transacoes_db:
             transacoes.append({
                 'id': t.id,
-                'tipo': t.tipo,  # 'entrada' ou 'saida'
+                'tipo': t.tipo,
                 'valor': t.valor,
                 'descricao': t.descricao,
-                'data': t.data.strftime('%Y-%m-%dT%H:%M:%S')  # ISO format para JS
+                'data': t.data.strftime('%Y-%m-%dT%H:%M:%S')
             })
     except Exception as e:
         print(f"Erro ao buscar transações: {e}")
 
     transacoes_json = json.dumps(transacoes)
 
-    return render_template('homeprestador.html', transacoes=transacoes_json)
+    return render_template(
+        'homeprestador.html',
+        prestador=user,  
+        transacoes=transacoes_json
+    )
+
+
 
 
 @app.route("/logout")
@@ -944,12 +950,19 @@ def remover_transacao(id):
 @role_required('cliente')
 def editar_perfil():
     cliente = current_user.cliente  # pega o cliente vinculado ao user
+    user = User.query.get(current_user.id)  # pega o user do login
 
     if request.method == 'POST':
-        cliente.nome = request.form['nome']
+        novo_nome = request.form['nome']
+
+        # Atualiza tabela Cliente
+        cliente.nome = novo_nome
         cliente.email = request.form['email']
         cliente.telefone = request.form['telefone']
         cliente.descricao = request.form['descricao']
+
+        # Atualiza tabela User (username usado no login!)
+        user.username = novo_nome
 
         # Upload da foto
         foto = request.files.get('foto')
@@ -959,10 +972,41 @@ def editar_perfil():
             cliente.foto = filename
 
         db.session.commit()
+
         flash('Perfil atualizado com sucesso!', 'success')
         return redirect(url_for('perfil_cliente'))
 
     return render_template('editar_perfil.html', cliente=cliente)
+
+@app.route('/editar_perfil_prestador', methods=['GET', 'POST'])
+@login_required
+@role_required('prestador')
+def editar_perfil_prestador():
+    prestador = current_user  # ← AQUI está o ajuste correto
+
+    if request.method == 'POST':
+        prestador.username = request.form['nome']
+        prestador.email = request.form['email']
+        prestador.telefone = request.form['telefone']
+        prestador.descricao = request.form['descricao']
+        prestador.experiencia = request.form.get('experiencia')
+
+        foto = request.files.get('foto')
+        if foto and foto.filename:
+            filename = secure_filename(foto.filename)
+            foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            prestador.foto = filename
+
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!', 'success')
+        return redirect(url_for('home_prestador'))
+
+    return render_template('editar_perfil_prestador.html', prestador=prestador)
+
+
+
+
+
 
 @app.route('/editar_usuario/<int:id>', methods=['GET', 'POST'])
 def editar_usuario(id):
@@ -1291,6 +1335,10 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(20), nullable=False, default='cliente')
     cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'))  
     cliente = db.relationship('Cliente', back_populates='usuario', lazy=True)
+    telefone = db.Column(db.String(20), nullable=True)
+    descricao = db.Column(db.Text, nullable=True)
+    foto = db.Column(db.String(255), nullable=True)
+
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.role}')"
